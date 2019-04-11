@@ -3,3 +3,7 @@
 *.aux
 *.pdf
 *.synctex.gz
+tempenv/
+virtualenv/
+webapp/
+.ipynb_checkpoints/
