@@ -30,10 +30,10 @@ meyersToNumbersDict = {
 }
 
 
-with open('data/mbti_5_1_emotion.csv', mode='w') as write_file:
+with open('data/mbti_8_1_emotion.csv', mode='w') as write_file:
 	employee_writer = csv.writer(write_file, delimiter=',')
 	employee_writer.writerow(['mbti', 'text', 'sadness', 'joy', 'fear', 'disgust', 'anger'])
-	with open('data/mbti_5_1.csv') as csv_file:
+	with open('data/mbti_8_1.csv') as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		line_count = 0
 		for row in csv_reader:
