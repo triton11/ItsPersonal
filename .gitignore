@@ -7,3 +7,4 @@ tempenv/
 virtualenv/
 webapp/
 .ipynb_checkpoints/
+data/
