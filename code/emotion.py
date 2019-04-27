@@ -43,8 +43,9 @@ print(y)
 model = RandomForestClassifier()
 
 
+######################################################
 # DON'T NEED TO FIT MODEL, CROSS VAL DOES IT FOR YOU
-
+######################################################
 #model.fit(X,y)
 
 
