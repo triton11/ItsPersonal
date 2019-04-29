@@ -3,7 +3,7 @@ import unicodedata
 import string
 import csv
 
-all_letters = string.ascii_letters + " .,;'-"
+all_letters = string.printable
 n_letters = len(all_letters) + 1 # Plus EOS marker
 EOS = n_letters - 1
 
@@ -25,7 +25,7 @@ n_categories = len(all_categories)
 
 # Read a file and split into lines
 def read_lines():
-	with open('../data/train_data.csv') as csv_file:
+	with open('../data/test_data.csv') as csv_file:
 		csv_reader = csv.reader(csv_file, delimiter=',')
 		line_count = 0
 		print("YO")
@@ -77,7 +77,7 @@ import random
 
 # Get a random category and random line from that category
 def random_training_pair():
-    category = random.choice(all_categories)
+    category = "6"
     line = random.choice(category_lines[category])
     #print("Random category, line: ", category, line)
     return category, line
@@ -112,9 +112,6 @@ def make_target(line):
 # Make category, input, and target tensors from a random category, line pair
 def random_training_set():
     category, line = random_training_pair()
-    if len(line) > 1000:
-    	line = line[0:1000]
-
     category_input = make_category_input(category)
     line_input = make_chars_input(line)
     line_target = make_target(line)
@@ -130,6 +127,7 @@ def train(category_tensor, input_line_tensor, target_line_tensor):
         output, hidden = rnn(category_tensor, input_line_tensor[i], hidden)
         # print("TRAINING", output, hidden, target_line_tensor[i])
         # print(target_line_tensor[i].size())
+        #print(loss)
         loss += criterion(output, target_line_tensor[i].unsqueeze(0))
 
     loss.backward()
@@ -152,7 +150,7 @@ print_every = 100
 plot_every = 5
 all_losses = []
 loss_avg = 0 # Zero every plot_every epochs to keep a running average
-learning_rate = 0.005
+learning_rate = 0.0003
 
 rnn = RNN(n_letters, 128, n_letters)
 optimizer = torch.optim.Adam(rnn.parameters(), lr=learning_rate)

@@ -85,7 +85,7 @@ def random_training_set(category):
     return inp, target
 
 
-def evaluate(start_char='A', temperature=0.5):
+def evaluate(start_char='A', temperature=0.8):
 
     chars_input = char_tensor(start_char)
     hidden = decoder.init_hidden()
@@ -146,7 +146,7 @@ all_losses = []
 loss_avg = 0
 
 for epoch in range(1, n_epochs + 1):
-    loss = train(*random_training_set("7"))       
+    loss = train(*random_training_set("1"))       
     loss_avg += loss
 
     if epoch % print_every == 0:
