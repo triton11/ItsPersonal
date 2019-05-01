@@ -69,17 +69,19 @@ In today?s society, more and more companies rely on personality types to help es
 \section{Approach}
 In this project, we attempt to answer two main questions. The first question is, "can we train a model to accurately predict a person's Myers-Briggs type using just blog posts?" The second question is, "can we train a model to reproduce blog posts with a specified Myers-Briggs type?" 
 \subsection{Data}
-[ADD MORE] We have cleaned the text data by removing the text post break characters (three vertical lines, or $|||$). We also removed URLs from the text, because they were highly variable and did not provide useful emotional analysis in IBM Watson. We decided to leave punctuation, capitalization, and emojis in place because they imply certain types of emotion in IBM Watson. After cleaning the data, we used a Python script to add the IBM Watson emotion features to the data set. The emotional features we included were anger, joy, sadness, disgust, and fear. Each emotional feature is represented by a score from 0 to 1, corresponding to how likely the text is to convey that emotion. 
+We have cleaned the text data by removing the text post break characters (three vertical lines, or $|||$). We also removed URLs from the text, because they were highly variable and did not provide useful emotional analysis in IBM Watson. We decided to leave punctuation, capitalization, and emojis in place because they imply certain types of emotion in IBM Watson. After analyzing the data, we realized that many posts referenced MBTI types, so we removed all mentions of MBTI types. However After cleaning the data, we used a Python script to add the IBM Watson emotion features to the data set. The emotional features we included were anger, joy, sadness, disgust, and fear. Each emotional feature is represented by a score from 0 to 1, corresponding to how likely the text is to convey that emotion. 
 
 \subsection{Principle Data Analysis}
 
 \section{Problem 1: Myers-Briggs Prediction}
 To answer the question "can we train a model to predict a person's Myers-Briggs type based on their blog posts", we decided to experiment with both sentiment prediction and text prediction models. When using sentiment to predict Myers-Briggers type, we used LogReg, Random Forest, and Support Vector Machine models. When using text based prediction, we used a Naive Bayes model implemented using TF-IDF transformed documents. 
 \subsection{Models}
-\textbf{Naive Bayes}: The Naive Bayes model implemented using TF-IDF transformed documents. The model took the MBTI and a long post that a person with that type wrote. The vectorizer had a maximum of 2000 features, used English stop words, and had an n-gram range of $(1,3)$. Additionally, as the model was refined, more stop words were added to the NLTK stopwords. At the end of training, the top twenty words used in each MBTI type's blog posts. If a word was included in all 16 of the MBTI or in 15 of the 16 MBTI, it was added as a stop word as there was no or negligible effect on what personality types use a word more or less often.  
+\textbf{Naive Bayes}: The Naive Bayes model implemented using TF-IDF transformed documents. The model took the MBTI and a long post that a person with that type wrote. The vectorizer had a maximum of 2000 features, used English stop words, and had an n-gram range of $(1,3)$. Additionally, as the model was refined, more stop words were added to the NLTK stopwords. At the end of training, the top twenty words used in each MBTI type's blog posts. If a word was included in all 16 of the MBTI or in 15 of the 16 MBTI, it was added as a stop word as there was no or negligible effect on what personality types use a word more or less often.  \\ \\
+\textbf{LDA Model}: Since emotional scores were not able to provide much insight, and TF-IDF has 2000 features, we decided to try using Latent Dirichlet Allocation (LDA) to generate features that incorporated aspects of the vocabulary used in the text posts without requiring a single feature for each word. To prepare the data, we used the NLTK SnowballStemmer to replace each word in each blog post with its root. We then generated a dictionary using the processed blog text, filtering out lower extremes (words with fewer than 15 appearances) and keeping the size of our dictionary below 100000 entries. We used the LdaMulticore model from the gensim package to generate our LDA categories. We built two distinct datasets incorporating LDA categories. The first dataset added 15 LDA topic features. After training prediction models on this first dataset and getting poor results, we decided to build a second dataset with 50 LDA category features. After building the two datasets, we trained and tuned a Random Forest Model, Logistic Regression Model, and SVM Model using the LDA category features along with the emotion scores from IBM Watson.
 
 \subsection{Results}
-\textbf{Naive Bayes}: We measured the performance of the Naive Bayes with TF-IDF by training the model on 6,999 MBTI types and their corresponding blog posts. This ensured that there were enough words to create significant features. When the training data was directly used for testing, the model returned a cross validation score of 0.5367. For five fold cross validating using the training data, the model returned cross validation scores ranging from 0.3204 to 0.3457. Finally, when the preseparated testing data was used, the model returned a cross validation score of 0.3554. The performance of all of these models increased when the additional stop words discussed above were added. Additionally, we calculated the top twenty words used by each type. Interesting, regardless of if the type was thinking or feeling, the word "feel" always scored higher than "think" or "know" within these lists. 
+\textbf{Naive Bayes}: We measured the performance of the Naive Bayes with TF-IDF by training the model on 6,999 MBTI types and their corresponding blog posts. This ensured that there were enough words to create significant features. When the training data was directly used for testing, the model returned a cross validation score of 0.5367. For five fold cross validating using the training data, the model returned cross validation scores ranging from 0.3204 to 0.3457. Finally, when the preseparated testing data was used, the model returned a cross validation score of 0.3554. The performance of all of these models increased when the additional stop words discussed above were added. Additionally, we calculated the top twenty words used by each type. Interesting, regardless of if the type was thinking or feeling, the word "feel" always scored higher than "think" or "know" within these lists. \\ \\
+\textbf{LDA Models}: A table of both the LDA Model results can be found in the appendix. We evaluated each model using 5 fold cross validation. Each of the 15 category + emotional score Models had below 25\% accuracy, even when we increased the number of LDA features to 50. However, the Random Forest Model was able to score statistically better than random chance, reaching a validation accuracy of over 23\%. The SVM models did the worst, and had a tendency to predict just one or two categories. 
 
 \section{Problem 2: Myers-Briggs Text Generation}
 To answer the question "can we train a model to reproduce blog posts with a specified Myers-Briggs type?", we decided to experiment with different types of Recurrent Neural Nets (RNNs). RNNs are useful tools for text generation because they keep track of state, allowing the net to make predictions using information from previous inputs along with the current input.
@@ -132,7 +134,29 @@ Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, Alexei A. Efros\\
 \newpage
 \section{Appendix}
 
+\textbf{LDA Model Results}
+\begin{table}[h!]
+\begin{tabular}{|l|l|l|}
+\hline
+Model                                                                                         & \begin{tabular}[c]{@{}l@{}}15 LDA + Emotion \\ Validation Accuracy\end{tabular} & \begin{tabular}[c]{@{}l@{}}50 LDA + Emotion \\ Validation Accuracy\end{tabular} \\ \hline
+SVM(kernel='linear')                                                                          & 0.22034899789067727                                                             & 0.21852301552781245                                                             \\ \hline
+\begin{tabular}[c]{@{}l@{}}RandomForest(max\_depth=10,\\ n\_estimators=20)\end{tabular}       & 0.2286492659587235                                                              & 0.23024160513679587                                                             \\ \hline
+\begin{tabular}[c]{@{}l@{}}LogReg(penalty='l1',\\ tol=0.0005,solver='liblinear')\end{tabular} & 0.23106660503080026                                                             & 0.22566510500108744                                                             \\ \hline
+\end{tabular}
+\end{table}
 
+\textbf{GRU RNN}
+\begin{table}[h!]
+\begin{tabular}{|l|l|l|l|}
+\hline
+Iteration & Time    & Cross-Entropy Loss & Example Line                                                                       \\ \hline
+100       & 14m 33s & 2.2738             & I I thing and me mich,even or the sare wart the gone the the mally a as a pinden   \\ \hline
+210       & 34m 18s & 1.8723             & I... OZmVlyboUd I I give thought, not might to fatate like do bout eting           \\ \hline
+350       & 58m 49s & 1.7740             & I've who denical adsels (we in are fact worring this? White.                       \\ \hline
+480       & 79m 45s & 1.8029             & If. I do who hate ancound happens to have a seen a dirlabcd and it an times        \\ \hline
+550       & 90m 47s & 1.6376             & I'd that at... abcd is abcd accomput persone and my for I'm she here it of an abcd \\ \hline
+\end{tabular}
+\end{table}
 
 \end{document}
 
