@@ -74,10 +74,12 @@ In this project, we attempt to answer two main questions. The first question is,
 \subsection{Principle Data Analysis}
 
 \section{Problem 1: Myers-Briggs Prediction}
-
+To answer the question "can we train a model to predict a person's Myers-Briggs type based on their blog posts", we decided to experiment with both sentiment prediction and text prediction models. When using sentiment to predict Myers-Briggers type, we used LogReg, Random Forest, and Support Vector Machine models. When using text based prediction, we used a Naive Bayes model implemented using TF-IDF transformed documents. 
 \subsection{Models}
+\textbf{Naive Bayes}: The Naive Bayes model implemented using TF-IDF transformed documents. The model took the MBTI and a long post that a person with that type wrote. The vectorizer had a maximum of 2000 features, used English stop words, and had an n-gram range of $(1,3)$. Additionally, as the model was refined, more stop words were added to the NLTK stopwords. At the end of training, the top twenty words used in each MBTI type's blog posts. If a word was included in all 16 of the MBTI or in 15 of the 16 MBTI, it was added as a stop word as there was no or negligible effect on what personality types use a word more or less often.  
 
 \subsection{Results}
+\textbf{Naive Bayes}: We measured the performance of the Naive Bayes with TF-IDF by training the model on 6,999 MBTI types and their corresponding blog posts. This ensured that there were enough words to create significant features. When the training data was directly used for testing, the model returned a cross validation score of 0.5367. For five fold cross validating using the training data, the model returned cross validation scores ranging from 0.3204 to 0.3457. Finally, when the preseparated testing data was used, the model returned a cross validation score of 0.3554. The performance of all of these models increased when the additional stop words discussed above were added. Additionally, we calculated the top twenty words used by each type. Interesting, regardless of if the type was thinking or feeling, the word "feel" always scored higher than "think" or "know" within these lists. 
 
 \section{Problem 2: Myers-Briggs Text Generation}
 To answer the question "can we train a model to reproduce blog posts with a specified Myers-Briggs type?", we decided to experiment with different types of Recurrent Neural Nets (RNNs). RNNs are useful tools for text generation because they keep track of state, allowing the net to make predictions using information from previous inputs along with the current input.
