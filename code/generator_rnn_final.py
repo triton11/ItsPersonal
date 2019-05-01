@@ -130,8 +130,8 @@ def train(inp, target):
     return loss.data.item() / inp.size()[0]
 
 
-n_epochs = 2000
-print_every = 50
+n_epochs = 1000
+print_every = 10
 plot_every = 10
 hidden_size = 120
 n_layers = 2
